@@ -10,7 +10,7 @@ For a detailed explanation, check out my article:
 👉 [An Inline CSP-Compatible Django Editor – Let's Do It (Part 1)](https://medium.com/@jpouromid/an-inline-csp-compatible-django-editor-lets-do-it-part-1-2a6fb2c6e56e)
 
 ## Visit My Website 🌐
-If you're interested in cybersecurity, Django, and secure web development, visit my website:  
+If you're interested in AI services, and educational courses (in Farsi) visit my website:  
 👉 **[CyberUni](https://cyberuni.ir/)**
 
 ## Contribute 🤝
