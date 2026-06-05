@@ -36,6 +36,7 @@ class JalgoEditor {
         this.createBubbleMenu();
         this.createSlashMenu();
         this.buildImageMenu();
+        this.buildCodeLangOverlay();
         
         document.addEventListener('selectionchange', () => this.handleSelection());
         document.addEventListener('mousedown', (e) => {
@@ -51,6 +52,9 @@ class JalgoEditor {
                     this.selectedImage.classList.remove('selected');
                     this.selectedImage = null;
                 }
+            }
+            if (this.codeLangOverlay && !this.codeLangOverlay.contains(e.target) && (!this.currentPreBlock || !this.currentPreBlock.contains(e.target))) {
+                this.hideCodeLangOverlay();
             }
         });
         
@@ -427,6 +431,10 @@ class JalgoEditor {
         // 2. Perform Bidi directional analysis on current blocks
         this.analyzeDirection();
         
+        // Apply syntax highlighting to code blocks
+        const preBlocks = this.canvas.querySelectorAll('pre');
+        preBlocks.forEach(pre => this.highlightPreBlock(pre));
+
         // 3. Update SEO Stats & Outline Validator
         this.updateSeoStats();
     }
@@ -665,12 +673,33 @@ class JalgoEditor {
     handleSelection() {
         const selection = window.getSelection();
         
-        // Don't mess with selection if we are interacting inside the bubble menu (like typing in the input)
+        // Don't mess with selection if we are interacting inside the menus
         if (this.bubbleMenu && this.bubbleMenu.contains(document.activeElement)) {
             return;
         }
+        if (this.codeLangOverlay && this.codeLangOverlay.contains(document.activeElement)) {
+            return;
+        }
 
-        if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+        if (!selection || selection.rangeCount === 0) {
+            this.hideBubbleMenu();
+            this.hideCodeLangOverlay();
+            return;
+        }
+
+        // Handle code language overlay regardless of selection collapse
+        if (selection.anchorNode && this.canvas.contains(selection.anchorNode)) {
+            const block = this.getParentBlock(selection.anchorNode);
+            if (block && block.tagName === 'PRE') {
+                this.showCodeLangOverlay(block);
+            } else {
+                this.hideCodeLangOverlay();
+            }
+        } else {
+            this.hideCodeLangOverlay();
+        }
+
+        if (selection.isCollapsed) {
             this.hideBubbleMenu();
             return;
         }
@@ -688,6 +717,173 @@ class JalgoEditor {
         }
 
         this.showBubbleMenu(selection.getRangeAt(0));
+    }
+
+    showCodeLangOverlay(preBlock) {
+        this.currentPreBlock = preBlock;
+        if (this.codeLangOverlay) {
+            this.codeLangOverlay.style.display = 'block';
+            const lang = preBlock.getAttribute('data-lang') || 'plaintext';
+            const select = this.codeLangOverlay.querySelector('select');
+            if (select) select.value = lang;
+            
+            // Wait for display:block to calculate width
+            setTimeout(() => {
+                const rect = preBlock.getBoundingClientRect();
+                const top = rect.top + window.scrollY + 8;
+                const left = rect.right + window.scrollX - this.codeLangOverlay.offsetWidth - 16;
+                
+                this.codeLangOverlay.style.top = `${top}px`;
+                this.codeLangOverlay.style.left = `${left}px`;
+            }, 0);
+        }
+    }
+
+    hideCodeLangOverlay() {
+        if (this.codeLangOverlay) {
+            this.codeLangOverlay.style.display = 'none';
+        }
+        this.currentPreBlock = null;
+    }
+
+    buildCodeLangOverlay() {
+        this.codeLangOverlay = document.createElement('div');
+        this.codeLangOverlay.className = 'jalgo-code-lang-overlay';
+        this.codeLangOverlay.style.padding = '4px';
+        this.codeLangOverlay.contentEditable = false;
+        
+        const select = document.createElement('select');
+        select.style.background = 'transparent';
+        select.style.border = 'none';
+        select.style.color = 'var(--jalgo-text)';
+        select.style.outline = 'none';
+        select.style.cursor = 'pointer';
+        select.style.fontSize = '12px';
+        select.style.fontWeight = '600';
+        
+        select.innerHTML = `
+            <option value="plaintext">Plain Text</option>
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="html">HTML/XML</option>
+            <option value="css">CSS</option>
+            <option value="cpp">C++</option>
+            <option value="java">Java</option>
+            <option value="php">PHP</option>
+            <option value="ruby">Ruby</option>
+            <option value="go">Go</option>
+            <option value="rust">Rust</option>
+            <option value="sql">SQL</option>
+            <option value="json">JSON</option>
+            <option value="bash">Bash</option>
+        `;
+        
+        select.addEventListener('change', (e) => {
+            if (this.currentPreBlock) {
+                this.currentPreBlock.setAttribute('data-lang', e.target.value);
+                this.highlightPreBlock(this.currentPreBlock);
+                this.syncAndAnalyze();
+            }
+        });
+        
+        this.codeLangOverlay.appendChild(select);
+        document.body.appendChild(this.codeLangOverlay);
+    }
+
+    highlightText(text, lang) {
+        let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        if (!lang || lang === 'plaintext') return html;
+        
+        if (lang === 'python') {
+            const keywords = ['def', 'class', 'import', 'from', 'return', 'if', 'elif', 'else', 'for', 'while', 'try', 'except', 'with', 'as', 'pass', 'True', 'False', 'None'];
+            html = html.replace(/(#.*$)/gm, '<span class="jalgo-token-comment">$1</span>');
+            html = html.replace(/(&quot;.*?&quot;|&#39;.*?&#39;|"[^"]*"|'[^']*')/g, '<span class="jalgo-token-string">$1</span>');
+            const kwRegex = new RegExp(`\\b(${keywords.join('|')})\\b(?![^<]*>)`, 'g');
+            html = html.replace(kwRegex, '<span class="jalgo-token-keyword">$1</span>');
+            html = html.replace(/\b(\d+)\b(?![^<]*>)/g, '<span class="jalgo-token-number">$1</span>');
+        } else if (lang === 'javascript') {
+            const keywords = ['const', 'let', 'var', 'function', 'class', 'import', 'export', 'return', 'if', 'else', 'for', 'while', 'try', 'catch', 'true', 'false', 'null', 'undefined', 'new', 'this'];
+            html = html.replace(/(\w+)(?=\s*\()/g, '<span class="jalgo-token-function">$1</span>');
+            html = html.replace(/(\/\/.*$|\/\*[\s\S]*?\*\/)/gm, '<span class="jalgo-token-comment">$1</span>');
+            html = html.replace(/("[^"]*"|'[^']*'|`[^`]*`)/g, '<span class="jalgo-token-string">$1</span>');
+            const kwRegex = new RegExp(`\\b(${keywords.join('|')})\\b(?![^<]*>)`, 'g');
+            html = html.replace(kwRegex, '<span class="jalgo-token-keyword">$1</span>');
+            html = html.replace(/\b(\d+)\b(?![^<]*>)/g, '<span class="jalgo-token-number">$1</span>');
+        } else if (lang === 'html' || lang === 'xml') {
+            html = html.replace(/(&lt;\/?\w+)/g, '<span class="jalgo-token-keyword">$1</span>');
+            html = html.replace(/([\w-]+)(?=\s*=\s*(&quot;|&#39;|"|'))/g, '<span class="jalgo-token-attr">$1</span>');
+            html = html.replace(/(&quot;.*?&quot;|&#39;.*?&#39;|"[^"]*"|'[^']*')/g, '<span class="jalgo-token-string">$1</span>');
+        } else if (lang === 'css') {
+            html = html.replace(/(\/\*[\s\S]*?\*\/)/gm, '<span class="jalgo-token-comment">$1</span>');
+            html = html.replace(/([\w-]+)(?=\s*:)/g, '<span class="jalgo-token-keyword">$1</span>');
+        } else if (['cpp', 'java', 'php', 'ruby', 'go', 'rust', 'sql', 'bash', 'json'].includes(lang)) {
+            // Generic fallback highlighter for expanded languages
+            const genericKeywords = ['int', 'float', 'double', 'char', 'void', 'public', 'private', 'class', 'struct', 'if', 'else', 'for', 'while', 'return', 'function', 'fn', 'let', 'var', 'const', 'import', 'include', 'use', 'namespace', 'select', 'from', 'where', 'echo'];
+            html = html.replace(/(\w+)(?=\s*\()/g, '<span class="jalgo-token-function">$1</span>');
+            html = html.replace(/(\/\/.*$|\/\*[\s\S]*?\*\/|#.*$)/gm, '<span class="jalgo-token-comment">$1</span>');
+            html = html.replace(/(&quot;.*?&quot;|&#39;.*?&#39;|"[^"]*"|'[^']*'|`[^`]*`)/g, '<span class="jalgo-token-string">$1</span>');
+            const kwRegex = new RegExp(`\\b(${genericKeywords.join('|')})\\b(?![^<]*>)`, 'gi');
+            html = html.replace(kwRegex, '<span class="jalgo-token-keyword">$1</span>');
+            html = html.replace(/\b(\d+)\b(?![^<]*>)/g, '<span class="jalgo-token-number">$1</span>');
+        }
+        return html;
+    }
+
+    highlightPreBlock(pre) {
+        const lang = pre.getAttribute('data-lang') || 'plaintext';
+        const text = pre.innerText || pre.textContent;
+        const newHtml = this.highlightText(text, lang);
+        
+        if (pre.innerHTML !== newHtml && newHtml !== '') {
+            const sel = window.getSelection();
+            let savedOffset = 0;
+            if (sel.rangeCount > 0) {
+                const range = sel.getRangeAt(0);
+                if (pre.contains(range.startContainer)) {
+                    const preRange = document.createRange();
+                    preRange.selectNodeContents(pre);
+                    preRange.setEnd(range.startContainer, range.startOffset);
+                    savedOffset = preRange.toString().length;
+                }
+            }
+            
+            pre.innerHTML = newHtml;
+            
+            if (savedOffset > 0) {
+                this.restoreCursor(pre, savedOffset);
+            }
+        }
+    }
+
+    restoreCursor(node, offset) {
+        const sel = window.getSelection();
+        const range = document.createRange();
+        let currentOffset = 0;
+        let found = false;
+        
+        function traverse(currentNode) {
+            if (found) return;
+            if (currentNode.nodeType === Node.TEXT_NODE) {
+                const len = currentNode.textContent.length;
+                if (currentOffset + len >= offset) {
+                    range.setStart(currentNode, offset - currentOffset);
+                    range.collapse(true);
+                    found = true;
+                } else {
+                    currentOffset += len;
+                }
+            } else {
+                for (let i = 0; i < currentNode.childNodes.length; i++) {
+                    traverse(currentNode.childNodes[i]);
+                }
+            }
+        }
+        
+        traverse(node);
+        if (found) {
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
     }
 
     showBubbleMenu(range) {

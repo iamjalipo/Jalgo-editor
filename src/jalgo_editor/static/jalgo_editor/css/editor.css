@@ -176,16 +176,21 @@
     padding-left: 2rem;
     margin: 1em 0;
 }
+.jalgo-editor-canvas ul li {
+    list-style-type: circle !important;
+}
 
 .jalgo-editor-canvas ol {
-    list-style-type: decimal;
     padding-left: 2rem;
     margin: 1em 0;
+}
+.jalgo-editor-canvas ol li {
+    list-style-type: decimal !important;
 }
 
 .jalgo-editor-canvas li {
     margin-bottom: 0.5em;
-    list-style: circle !important;
+    display: list-item !important;
 }
 
 .jalgo-editor-canvas [dir="rtl"] {
@@ -800,5 +805,126 @@
 }
 .jalgo-editor-canvas a:hover {
     color: #4f46e5 !important;
+}
+
+.jalgo-token-function {
+    color: #6f42c1;
+}
+.jalgo-token-attr {
+    color: #22863a;
+}
+
+/* Dark theme token overrides for pre blocks */
+pre .jalgo-token-keyword { color: #ff7b72; font-weight: 600; }
+pre .jalgo-token-string { color: #a5d6ff; }
+pre .jalgo-token-number { color: #79c0ff; }
+pre .jalgo-token-comment { color: #8b949e; font-style: italic; }
+pre .jalgo-token-function { color: #d2a8ff; }
+pre .jalgo-token-attr { color: #7ee787; }
+
+.jalgo-code-lang-overlay {
+    position: absolute;
+    z-index: 1000;
+    display: none;
+    background: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.jalgo-code-lang-overlay select {
+    color: #e8eaed !important;
+}
+.jalgo-code-lang-overlay select option {
+    background: #2d2d2d;
+    color: #e8eaed;
+}
+.jalgo-code-lang-overlay.active {
+    display: block;
+}
+
+/* Frontend Template Styles (.jalgo-content) */
+.jalgo-content {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.8;
+    color: #e8eaed;
+    font-size: 1.1rem;
+}
+
+.jalgo-content h1, .jalgo-content h2, .jalgo-content h3 {
+    font-weight: 700;
+    line-height: 1.3;
+    margin-top: 2em;
+    margin-bottom: 1em;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+}
+
+.jalgo-content h1 { font-size: 2.5rem; }
+.jalgo-content h2 { font-size: 1.8rem; border-bottom: 1px solid #333; padding-bottom: 0.3em; }
+.jalgo-content h3 { font-size: 1.4rem; }
+
+.jalgo-content p {
+    margin-bottom: 1.5em;
+}
+
+.jalgo-content a {
+    color: #818cf8;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.jalgo-content a:hover {
+    border-color: #818cf8;
+}
+
+.jalgo-content blockquote {
+    margin: 2em 0;
+    padding: 1.2em 1.5em;
+    border-left: 4px solid #818cf8;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: #a1a1aa;
+}
+
+.jalgo-content ul, .jalgo-content ol {
+    margin-bottom: 1.5em;
+    padding-left: 1.5em;
+}
+
+.jalgo-content ul li {
+    list-style-type: disc;
+    margin-bottom: 0.5em;
+}
+
+.jalgo-content ol li {
+    list-style-type: decimal;
+    margin-bottom: 0.5em;
+}
+
+.jalgo-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin: 2em 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.jalgo-content img.align-left { float: left; margin: 1em 2em 1em 0; max-width: 50%; }
+.jalgo-content img.align-right { float: right; margin: 1em 0 1em 2em; max-width: 50%; }
+.jalgo-content img.align-center { display: block; margin-left: auto; margin-right: auto; }
+
+.jalgo-content pre {
+    background: #111111;
+    padding: 1.5rem;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin: 2em 0;
+    border: 1px solid #333;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
 }
 

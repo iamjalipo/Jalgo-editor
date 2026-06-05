@@ -8,7 +8,7 @@ class JalgoSanitizer(HTMLParser):
         "ul", "ol", "li", "pre", "code", "a", "img", "br", "hr", "b", "i", "span"
     }
     
-    ALLOWED_ATTRIBUTES = {"dir", "href", "src", "alt", "title"}
+    ALLOWED_ATTRIBUTES = {"dir", "href", "src", "alt", "title", "data-lang", "class"}
     
     ALLOWED_DIR_VALUES = {"ltr", "rtl", "auto"}
     

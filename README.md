@@ -1,9 +1,5 @@
 # Jalgo-editor
 
-![Jalgo Editor Feature](images/1.png)
-![Jalgo Editor Interface](images/2.png)
-![Jalgo Editor AI feature](images/3.png)
-
 A zero-dependency, CSP-strict, bidirectional rich-text editor that feels like Notion but lives natively inside the Django Admin.
 
 ## Why Jalgo?
@@ -58,6 +54,44 @@ class Article(models.Model):
 
 No widget configuration needed! It will seamlessly appear in your Django Admin with beautiful Glassmorphism styling and dark-mode support.
 
+### Displaying Content
+
+To securely render the stored HTML in your frontend templates, use Django's `safe` filter. We highly recommend including the editor's CSS file and wrapping your content in the `.jalgo-content` class. This provides a premium, modern, and minimal dark-themed typography design out-of-the-box (including styled headers, quotes, lists, and syntax-highlighted code blocks):
+
+```html
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Include the editor CSS to load the beautiful frontend typography -->
+    <link rel="stylesheet" href="{% static 'jalgo_editor/css/editor.css' %}">
+</head>
+<!-- Add a dark background to your body to match the styling -->
+<body class="dark-background">
+    <!-- Wrap your content in jalgo-content -->
+    <div class="jalgo-content">
+        {{ article.content|safe }}
+    </div>
+</body>
+</html>
+```
+
+### Using with Docker
+
+Because `jalgo-editor` is pure Python/JS and has zero external build dependencies, using it in a Dockerized Django project is extremely simple. Just add it to your `requirements.txt`:
+
+```text
+jalgo-editor>=1.0.1
+```
+
+Then in your `Dockerfile`:
+
+```dockerfile
+RUN pip install -r requirements.txt
+```
+
+*Note: Ensure you run `python manage.py collectstatic` during your deployment pipeline so the editor's static files are correctly served by your web server (e.g., Nginx, WhiteNoise).*
+
 ## Monetizable Extensions (Premium API)
 
 Jalgo-editor includes configuration hooks for premium integrations:
@@ -66,3 +100,8 @@ Jalgo-editor includes configuration hooks for premium integrations:
 
 ## License
 MIT License
+
+
+
+![Jalgo Editor Feature](images/1.png)
+![Jalgo Editor AI feature](images/3.png)
