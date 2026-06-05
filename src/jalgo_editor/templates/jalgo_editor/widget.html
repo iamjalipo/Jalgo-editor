@@ -1,0 +1,13 @@
+<div class="jalgo-editor-wrapper">
+    <!-- Hidden textarea that django forms hook into -->
+    {% include "django/forms/widgets/textarea.html" %}
+    
+    <!-- Visual Editor target container -->
+    <div class="jalgo-editor-container" 
+         data-target-id="{{ widget.attrs.id }}"
+         dir="auto">
+        <div class="jalgo-editor-canvas" contenteditable="true">
+            {{ widget.value|default:""|safe }}
+        </div>
+    </div>
+</div>

@@ -1,27 +1,60 @@
-# Jalgo-Editor: A CSP-Compatible Inline Editor for Django
+# Jalgo-editor
 
-This project provides a **Content Security Policy (CSP)-compatible inline editor** built using pure JavaScript and Django-HTML. It ensures security while allowing inline content editing without violating strict CSP rules.
+A zero-dependency, CSP-strict, bidirectional rich-text editor that feels like Notion but lives natively inside the Django Admin.
 
-## Overview
+## Why Jalgo?
 
-In many modern web applications, inline editors often require the use of **unsafe-inline** scripts, which can create security vulnerabilities. This project presents a **CSP-compliant solution** by leveraging Django and vanilla JavaScript without requiring any inline JavaScript execution.
+Right now, if a Django developer wants a rich-text editor, they have to compromise:
+*   **CKEditor / TinyMCE**: Bloated, and fails strict Content Security Policies (CSP) because they inject `style="..."` everywhere.
+*   **Editor.js**: Block-based, making mixed-language typing (Persian and English in the same article) a frustrating experience.
+*   **Tiptap/ProseMirror**: Requires NPM, React/Vue, and complex build pipelines.
 
-For a detailed explanation, check out my article:  
-👉 [An Inline CSP-Compatible Django Editor – Let's Do It (Part 1)](https://medium.com/@jpouromid/an-inline-csp-compatible-django-editor-lets-do-it-part-1-2a6fb2c6e56e)
+**Jalgo-editor** is the anti-bloat editor. It is a pure Python and Vanilla JavaScript package that drops into any Django project instantly. **No NPM, no build steps, no external CSS frameworks required.**
 
-## Visit My Website 🌐
-If you're interested in AI services, and educational courses (in Farsi) visit my website:  
-👉 **[CyberUni](https://cyberuni.ir/)**
+## Killer Features
 
-## Contribute 🤝
-I'm looking for contributors to help improve this project and package it as a reusable **Django package**. If you're interested in collaborating, feel free to open issues, submit pull requests, or reach out!
+1.  **Smart Bi-Directional (Bidi) Engine**: Users don't click an "RTL" or "LTR" button. The editor automatically detects the language of every new paragraph natively applying `dir="rtl"` to Persian/Arabic blocks, and `dir="ltr"` to English.
+2.  **100% CSP Compliant (Bank-Grade Security)**: Zero inline styles. Formatting is strictly semantic. A robust backend Python parser completely strips bad formatting on save.
+3.  **The "Zen" Interface**: Bubble Menus, Slash Commands (`/`), and a beautiful glassmorphism design that fully respects Django's Light/Dark modes.
+4.  **Built-in SEO Tools & Code View**: Real-time word counts, reading time, heading hierarchy validators, and a zero-dependency Syntax-Highlighted Code Editor built right in.
 
-Let's make Django more **secure and developer-friendly** together!
+## Installation
+
+Install using pip:
+
+```bash
+pip install jalgo-editor
+```
+
+Add to your `INSTALLED_APPS` in `settings.py`:
+
+```python
+INSTALLED_APPS = [
+    # ...
+    "jalgo_editor",
+]
+```
+
+## Usage
+
+Simply swap your standard `models.TextField` with `FluidTextField`:
+
+```python
+from django.db import models
+from jalgo_editor.fields import FluidTextField
+
+class Article(models.Model):
+    title = models.CharField(max_length=200)
+    content = FluidTextField() # Automatically renders the Notion-style editor
+```
+
+No widget configuration needed! It will seamlessly appear in your Django Admin with beautiful Glassmorphism styling and dark-mode support.
+
+## Monetizable Extensions (Premium API)
+
+Jalgo-editor includes configuration hooks for premium integrations:
+*   `JALGO_AI_LICENSE_KEY`: Unlocks the `/ai` autocomplete translation and phrasing engine inside the bubble menu.
+*   `JALGO_CDN_TOKEN`: Bypasses your local media storage to automatically drag-and-drop upload and WebP-optimize images to the Jalgo CDN.
 
 ## License
-This project is open-source under the **MIT License**.
-
----
-**Author:** [MohammadJalal Pouromid]  
-📧 Contact: [jalalpouromid@gmail.com]
-
+MIT License

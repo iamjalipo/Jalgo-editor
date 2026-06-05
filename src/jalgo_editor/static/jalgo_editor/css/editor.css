@@ -1,0 +1,324 @@
+:root {
+    --jalgo-bg: #ffffff;
+    --jalgo-text: #202124;
+    --jalgo-border: #e0e0e0;
+    --jalgo-focus-ring: rgba(66, 153, 225, 0.5);
+    --jalgo-menu-bg: rgba(255, 255, 255, 0.85);
+    --jalgo-menu-blur: blur(12px);
+    --jalgo-menu-border: rgba(0, 0, 0, 0.1);
+    --jalgo-menu-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --jalgo-bg: #1e1e1e;
+        --jalgo-text: #e8eaed;
+        --jalgo-border: #444;
+        --jalgo-menu-bg: rgba(30, 30, 30, 0.85);
+        --jalgo-menu-border: rgba(255, 255, 255, 0.1);
+        --jalgo-menu-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+}
+
+.jalgo-editor-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.jalgo-editor-wrapper textarea {
+    display: none; /* Hide the django standard textarea */
+}
+
+.jalgo-editor-container {
+    background-color: var(--jalgo-bg);
+    color: var(--jalgo-text);
+    border: 1px solid var(--jalgo-border);
+    border-radius: 8px;
+    padding: 16px 24px;
+    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    min-height: 250px;
+    box-sizing: border-box;
+}
+
+.jalgo-editor-container:focus-within {
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px var(--jalgo-focus-ring), 0 4px 12px rgba(66, 153, 225, 0.1);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+/* Custom Scrollbar */
+.jalgo-editor-container ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.jalgo-editor-container ::-webkit-scrollbar-track {
+    background: transparent;
+}
+.jalgo-editor-container ::-webkit-scrollbar-thumb {
+    background: rgba(150, 150, 150, 0.3);
+    border-radius: 4px;
+}
+.jalgo-editor-container ::-webkit-scrollbar-thumb:hover {
+    background: rgba(150, 150, 150, 0.5);
+}
+
+.jalgo-editor-canvas {
+    outline: none;
+    min-height: 200px;
+}
+
+.jalgo-editor-canvas p {
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+
+.jalgo-editor-canvas p:last-child {
+    margin-bottom: 0;
+}
+
+.jalgo-editor-canvas [dir="rtl"] {
+    text-align: right;
+}
+
+.jalgo-editor-canvas [dir="ltr"] {
+    text-align: left;
+}
+
+.jalgo-editor-canvas blockquote {
+    border-left: 3px solid var(--jalgo-border);
+    margin: 0 0 1em 0;
+    padding-left: 1em;
+    color: #666;
+}
+
+.jalgo-editor-canvas [dir="rtl"] blockquote {
+    border-left: none;
+    border-right: 3px solid var(--jalgo-border);
+    padding-left: 0;
+    padding-right: 1em;
+}
+
+/* Glassmorphism Bubble Menu */
+.jalgo-bubble-menu {
+    position: absolute;
+    background: var(--jalgo-menu-bg);
+    backdrop-filter: var(--jalgo-menu-blur);
+    -webkit-backdrop-filter: var(--jalgo-menu-blur);
+    border: 1px solid var(--jalgo-menu-border);
+    box-shadow: var(--jalgo-menu-shadow);
+    border-radius: 8px;
+    display: flex;
+    padding: 4px;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px) scale(0.95);
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.jalgo-bubble-menu.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+.jalgo-menu-btn {
+    background: transparent;
+    border: none;
+    color: var(--jalgo-text);
+    padding: 6px 10px;
+    margin: 0 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    font-family: inherit;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.jalgo-menu-btn:hover {
+    background: rgba(120, 120, 120, 0.15);
+}
+
+.jalgo-menu-btn.premium {
+    color: #8b5cf6; /* Distinctive premium purple color for the AI hook */
+}
+
+.jalgo-menu-btn.premium:hover {
+    background: rgba(139, 92, 246, 0.1);
+}
+
+/* Glassmorphism Slash Menu */
+.jalgo-slash-menu {
+    position: absolute;
+    background: var(--jalgo-menu-bg);
+    backdrop-filter: var(--jalgo-menu-blur);
+    -webkit-backdrop-filter: var(--jalgo-menu-blur);
+    border: 1px solid var(--jalgo-menu-border);
+    box-shadow: var(--jalgo-menu-shadow);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    width: 200px;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px) scale(0.95);
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.jalgo-slash-menu.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+.jalgo-slash-menu-item {
+    background: transparent;
+    border: none;
+    color: var(--jalgo-text);
+    padding: 8px 12px;
+    margin: 2px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 14px;
+    transition: background 0.15s ease;
+}
+
+.jalgo-slash-menu-item:hover, .jalgo-slash-menu-item.selected {
+    background: rgba(100, 100, 100, 0.15);
+}
+
+.jalgo-slash-menu-item strong {
+    display: block;
+    font-weight: 600;
+}
+
+.jalgo-slash-menu-item small {
+    display: block;
+    color: #888;
+    font-size: 11px;
+}
+
+/* Code View & Syntax Highlighting */
+.jalgo-editor-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--jalgo-border);
+    margin-bottom: 12px;
+}
+
+.jalgo-editor-toolbar button {
+    background: transparent;
+    border: 1px solid var(--jalgo-border);
+    color: var(--jalgo-text);
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.jalgo-editor-toolbar button:hover {
+    background: rgba(100, 100, 100, 0.1);
+}
+
+.jalgo-code-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+    display: none; /* hidden by default */
+}
+
+.jalgo-code-wrapper.active {
+    display: block;
+}
+
+.jalgo-editor-canvas.hidden {
+    display: none;
+}
+
+.jalgo-code-textarea, .jalgo-code-highlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    border: none;
+    box-sizing: border-box;
+}
+
+.jalgo-code-textarea {
+    color: transparent;
+    background: transparent;
+    caret-color: var(--jalgo-text);
+    z-index: 2;
+    resize: vertical;
+    outline: none;
+}
+
+.jalgo-code-highlight {
+    z-index: 1;
+    color: var(--jalgo-text);
+    pointer-events: none;
+}
+
+/* Syntax Colors */
+.token-tag { color: #e06c75; font-weight: bold; }
+.token-attr { color: #d19a66; }
+.token-string { color: #98c379; }
+.token-punct { color: #abb2bf; }
+
+/* SEO Panel */
+.jalgo-seo-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin-top: 8px;
+    background: var(--jalgo-bg);
+    border: 1px solid var(--jalgo-border);
+    border-radius: 6px;
+    font-size: 12px;
+    color: #666;
+}
+
+.jalgo-seo-stats {
+    display: flex;
+    gap: 16px;
+}
+
+.jalgo-seo-stat strong {
+    color: var(--jalgo-text);
+}
+
+.jalgo-seo-warnings {
+    color: #e53e3e;
+    font-weight: 600;
+}
+
+.jalgo-seo-warnings:empty {
+    display: none;
+}
+
+/* Drag & Drop */
+.jalgo-editor-container.drag-over {
+    border-color: #8b5cf6;
+    background-color: rgba(139, 92, 246, 0.05);
+}
+
