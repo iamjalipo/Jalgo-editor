@@ -6,9 +6,8 @@ class FluidTextField(models.TextField):
     description = "A bidirectional, secure rich-text field."
 
     def formfield(self, **kwargs):
-        defaults = {'widget': FluidTextWidget}
-        defaults.update(kwargs)
-        return super().formfield(**defaults)
+        kwargs['widget'] = FluidTextWidget
+        return super().formfield(**kwargs)
 
     def clean(self, value, model_instance):
         value = super().clean(value, model_instance)

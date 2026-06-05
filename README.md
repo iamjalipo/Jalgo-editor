@@ -1,5 +1,9 @@
 # Jalgo-editor
 
+![Jalgo Editor Feature](images/1.png)
+![Jalgo Editor Interface](images/2.png)
+![Jalgo Editor AI feature](images/3.png)
+
 A zero-dependency, CSP-strict, bidirectional rich-text editor that feels like Notion but lives natively inside the Django Admin.
 
 ## Why Jalgo?
@@ -13,13 +17,14 @@ Right now, if a Django developer wants a rich-text editor, they have to compromi
 
 ## Killer Features
 
-1.  **Smart Bi-Directional (Bidi) Engine**: Users don't click an "RTL" or "LTR" button. The editor automatically detects the language of every new paragraph natively applying `dir="rtl"` to Persian/Arabic blocks, and `dir="ltr"` to English.
-2.  **Bank-Grade Security (Double Sanitization)**: 100% CSP compliant with zero inline styles. A rigorous frontend DOM sanitizer prevents client-side XSS during copy-paste, while a robust backend Python parser provides defense-in-depth Stored XSS protection. Safely handles Base64 image embedding while aggressively stripping malicious data URIs.
-3.  **The "Zen" Interface & Dynamic Themes**: Notion-like Bubble Menus, fully keyboard-navigable Slash Commands (`/`), and a beautiful premium glassmorphism design. Instantly switch between multiple themes including Default, Dark, Retro, and an 8-Bit pixel aesthetic!
-4.  **Live Syntax Highlighting**: A lightweight, zero-dependency generic syntax highlighter automatically colorizes programming languages (keywords, strings, comments) in `<pre>` code blocks as you type—even adapting to your chosen theme.
-5.  **Built-in SEO Tools & Code View**: Real-time word counts, reading time, heading hierarchy validators, and a robust HTML Code View editor.
-6.  **Seamless Admin Integration**: Automatically initializes in Django Admin, fully supporting dynamic Inline Formsets without any configuration.
-7.  **Drag & Drop Images**: Works out-of-the-box using local Base64 embedding with secure validation.
+1.  **Smart Bi-Directional (Bidi) Engine**: Users don't click an "RTL" or "LTR" button for every block. The editor automatically detects the language of every new paragraph natively applying `dir="rtl"` to Persian/Arabic blocks, and `dir="ltr"` to English. Plus, a global RTL/LTR toggle lets you flip the entire editor's base direction instantly.
+2.  **Bank-Grade Security (Double Sanitization)**: 100% CSP compliant with zero inline styles by default. A rigorous backend Python parser provides defense-in-depth Stored XSS protection. Safely handles Base64 image embedding while aggressively stripping malicious data URIs.
+3.  **The "Zen" Interface & Block UI**: Notion-like Bubble Menus, fully keyboard-navigable Slash Commands (`/`), and a beautiful premium glassmorphism design. Headings, Quotes, and Code Blocks feature beautiful, distinct "Boxed UI" layouts with floating badges so you always know what block you are editing.
+4.  **Dynamic Themes**: Instantly switch between multiple themes including Default, Dark, Retro, and an 8-Bit pixel aesthetic using a custom-built, sleek dropdown selector. Themes dynamically update syntax highlighting colors and UI accents.
+5.  **Live Syntax Highlighting**: A lightweight, zero-dependency generic syntax highlighter automatically colorizes programming languages (keywords, strings, comments) in `<pre>` code blocks as you type.
+6.  **Unrestricted HTML Code View (Base64-Free)**: A rock-solid, fully editable dark-mode `<textarea>` for raw HTML tweaking. Huge Base64 image strings are intelligently swapped for clean placeholders while editing HTML, keeping your source code beautiful and snappy. We bypass restrictive frontend DOM sanitizers in this view, trusting developers to inject custom classes and tags, deferring final sanitization to the backend.
+7.  **Seamless Admin Integration**: Automatically initializes in Django Admin, fully supporting dynamic Inline Formsets without any configuration.
+8.  **Drag & Drop Images with Dynamic Alt Text**: Works out-of-the-box using local Base64 embedding with secure validation. Features a sleek, inline floating input field to instantly add and edit SEO-friendly `alt` text right from the image's bubble menu.
 
 ## Installation
 

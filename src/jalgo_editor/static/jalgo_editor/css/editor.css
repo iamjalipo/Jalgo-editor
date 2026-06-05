@@ -1,5 +1,3 @@
-
-
 :root {
     --jalgo-bg: #ffffff;
     --jalgo-text: #202124;
@@ -25,10 +23,10 @@
 /* Theme: Retro */
 .jalgo-editor-container[data-jalgo-theme="retro"] {
     --jalgo-bg: #f4ecd8;
-    --jalgo-text: #5c4b37;
-    --jalgo-border: #d4c4a8;
-    --jalgo-focus-ring: rgba(184, 134, 11, 0.4);
-    --jalgo-menu-bg: rgba(244, 236, 216, 0.9);
+    --jalgo-text: #3e3224;
+    --jalgo-border: #c4b498;
+    --jalgo-focus-ring: #b8860b;
+    --jalgo-menu-bg: rgba(244, 236, 216, 0.95);
     --jalgo-font-family: 'Courier New', Courier, monospace;
 }
 
@@ -50,8 +48,9 @@
     margin-bottom: 1rem;
 }
 
-.jalgo-editor-wrapper textarea {
-    display: none; /* Hide the django standard textarea */
+.jalgo-editor-wrapper>textarea {
+    display: none;
+    /* Hide the django standard textarea */
 }
 
 .jalgo-editor-container {
@@ -64,7 +63,7 @@
     font-size: 16px;
     line-height: 1.6;
     transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
-    min-height: 250px;
+    min-height: 450px;
     box-sizing: border-box;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
 }
@@ -81,20 +80,86 @@
     width: 8px;
     height: 8px;
 }
+
 .jalgo-editor-container ::-webkit-scrollbar-track {
     background: transparent;
 }
+
 .jalgo-editor-container ::-webkit-scrollbar-thumb {
     background: rgba(150, 150, 150, 0.3);
     border-radius: 4px;
 }
+
 .jalgo-editor-container ::-webkit-scrollbar-thumb:hover {
     background: rgba(150, 150, 150, 0.5);
 }
 
+.jalgo-editor-canvas h1,
+.jalgo-editor-canvas h2,
+.jalgo-editor-canvas h3 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    position: relative;
+    border: 1px solid var(--jalgo-border);
+    padding: 2.5rem 1rem 1rem 1rem;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.jalgo-editor-canvas h1::before,
+.jalgo-editor-canvas h2::before,
+.jalgo-editor-canvas h3::before {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--jalgo-text);
+    background: var(--jalgo-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--jalgo-border);
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+}
+
+.jalgo-editor-canvas h1::before {
+    content: "H1";
+}
+
+.jalgo-editor-canvas h2::before {
+    content: "H2";
+}
+
+.jalgo-editor-canvas h3::before {
+    content: "H3";
+}
+
+.jalgo-editor-canvas h1 {
+    font-size: 2em;
+}
+
+.jalgo-editor-canvas h2 {
+    font-size: 1.5em;
+}
+
+.jalgo-editor-canvas h3 {
+    font-size: 1.17em;
+}
+
 .jalgo-editor-canvas {
     outline: none;
-    min-height: 200px;
+    min-height: 380px;
+}
+
+.jalgo-editor-canvas *,
+.jalgo-editor-canvas h1,
+.jalgo-editor-canvas h2,
+.jalgo-editor-canvas h3,
+.jalgo-editor-canvas p,
+.jalgo-editor-canvas blockquote,
+.jalgo-editor-canvas pre {
+    color: var(--jalgo-text) !important;
 }
 
 .jalgo-editor-canvas p {
@@ -106,6 +171,23 @@
     margin-bottom: 0;
 }
 
+.jalgo-editor-canvas ul {
+    margin-left: 20px !important;
+    padding-left: 2rem;
+    margin: 1em 0;
+}
+
+.jalgo-editor-canvas ol {
+    list-style-type: decimal;
+    padding-left: 2rem;
+    margin: 1em 0;
+}
+
+.jalgo-editor-canvas li {
+    margin-bottom: 0.5em;
+    list-style: circle !important;
+}
+
 .jalgo-editor-canvas [dir="rtl"] {
     text-align: right;
 }
@@ -115,17 +197,43 @@
 }
 
 .jalgo-editor-canvas blockquote {
-    border-left: 3px solid var(--jalgo-border);
-    margin: 0 0 1em 0;
-    padding-left: 1em;
-    color: #666;
+    margin-top: 1.5em;
+    margin-bottom: 1em;
+    position: relative;
+    border: 1px solid var(--jalgo-border);
+    border-left: 4px solid var(--jalgo-focus-ring);
+    padding: 2.5rem 1rem 1rem 1rem;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.02);
+    color: var(--jalgo-text);
+    font-style: italic;
+}
+
+.jalgo-editor-canvas blockquote::before {
+    content: "Quote";
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--jalgo-text);
+    background: var(--jalgo-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--jalgo-border);
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+    font-style: normal;
 }
 
 .jalgo-editor-canvas [dir="rtl"] blockquote {
-    border-left: none;
-    border-right: 3px solid var(--jalgo-border);
-    padding-left: 0;
-    padding-right: 1em;
+    border-left: 1px solid var(--jalgo-border);
+    border-right: 4px solid var(--jalgo-focus-ring);
+}
+
+.jalgo-editor-canvas [dir="rtl"] blockquote::before {
+    left: auto;
+    right: 8px;
 }
 
 /* Glassmorphism Bubble Menu */
@@ -172,7 +280,8 @@
 }
 
 .jalgo-menu-btn.premium {
-    color: #8b5cf6; /* Distinctive premium purple color for the AI hook */
+    color: #8b5cf6;
+    /* Distinctive premium purple color for the AI hook */
 }
 
 .jalgo-menu-btn.premium:hover {
@@ -218,7 +327,8 @@
     transition: background 0.15s ease;
 }
 
-.jalgo-slash-menu-item:hover, .jalgo-slash-menu-item.selected {
+.jalgo-slash-menu-item:hover,
+.jalgo-slash-menu-item.selected {
     background: rgba(100, 100, 100, 0.15);
 }
 
@@ -236,32 +346,230 @@
 /* Code View & Syntax Highlighting */
 .jalgo-editor-toolbar {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--jalgo-border);
     margin-bottom: 12px;
 }
 
-.jalgo-editor-toolbar button {
-    background: transparent;
+.jalgo-format-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.jalgo-action-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    border-top: 1px dashed var(--jalgo-border);
+    padding-top: 8px;
+    margin-top: 4px;
+    width: 100%;
+}
+
+.jalgo-divider {
+    width: 1px;
+    height: 18px;
+    background-color: var(--jalgo-border);
+    margin: 0 4px;
+    opacity: 0.6;
+}
+
+.jalgo-format-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--jalgo-bg);
     border: 1px solid var(--jalgo-border);
     color: var(--jalgo-text);
-    padding: 4px 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.jalgo-format-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-width: 0;
+}
+
+.jalgo-format-btn:hover {
+    background: rgba(100, 100, 100, 0.1);
+    border-color: var(--jalgo-focus-ring);
+}
+
+.jalgo-format-btn.active {
+    background: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
+    border-color: #6366f1;
+}
+
+/* Tooltip implementation */
+[data-jalgo-tooltip] {
+    position: relative;
+}
+
+[data-jalgo-tooltip]::after {
+    content: attr(data-jalgo-tooltip);
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: var(--jalgo-text);
+    color: var(--jalgo-bg);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    z-index: 100;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+[data-jalgo-tooltip]:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Custom Dropdown Menu */
+.jalgo-custom-select {
+    position: relative;
+    user-select: none;
+}
+
+.jalgo-custom-select-btn {
+    background-color: var(--jalgo-bg);
+    color: var(--jalgo-text);
+    border: 1px solid var(--jalgo-border);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    height: 33px;
+}
+
+.jalgo-custom-select-btn:hover {
+    border-color: #6366f1;
+}
+
+.jalgo-custom-select-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: var(--jalgo-menu-bg);
+    backdrop-filter: var(--jalgo-menu-blur);
+    -webkit-backdrop-filter: var(--jalgo-menu-blur);
+    border: 1px solid var(--jalgo-menu-border);
+    box-shadow: var(--jalgo-menu-shadow);
+    border-radius: 6px;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-5px);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1001;
+}
+
+.jalgo-custom-select-menu.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.jalgo-custom-select-option {
+    background: transparent;
+    border: none;
+    color: var(--jalgo-text);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 500;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 12px;
+    transition: background 0.15s ease;
+}
+
+.jalgo-custom-select-option:hover {
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+}
+
+.jalgo-custom-select-option.active {
+    background: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
     font-weight: 600;
 }
 
-.jalgo-editor-toolbar button:hover {
+.jalgo-action-btn {
+    background: transparent;
+    border: 1px solid var(--jalgo-border);
+    color: var(--jalgo-text);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.jalgo-action-btn:hover {
     background: rgba(100, 100, 100, 0.1);
+    transform: translateY(-1px);
+}
+
+.jalgo-action-btn.code-view-btn {
+    background: #10b981;
+    color: white;
+    border-color: #059669;
+}
+
+.jalgo-action-btn.code-view-btn:hover {
+    background: #059669;
+}
+
+.jalgo-action-btn.rtl-btn {
+    background: #6366f1;
+    color: white;
+    border-color: #4f46e5;
+}
+
+.jalgo-action-btn.rtl-btn:hover {
+    background: #4f46e5;
 }
 
 .jalgo-code-wrapper {
     position: relative;
     width: 100%;
-    min-height: 200px;
-    display: none; /* hidden by default */
+    min-height: 380px;
+    display: none;
+    /* hidden by default */
 }
 
 .jalgo-code-wrapper.active {
@@ -272,43 +580,68 @@
     display: none;
 }
 
-.jalgo-code-textarea, .jalgo-code-highlight {
-    position: absolute;
-    top: 0;
-    left: 0;
+.jalgo-editor-container.code-view-active {
+    --jalgo-bg: #1e1e1e !important;
+    --jalgo-text: #e8eaed !important;
+    --jalgo-border: #444444 !important;
+    --jalgo-menu-bg: rgba(30, 30, 30, 0.95) !important;
+    background-color: var(--jalgo-bg);
+}
+
+.jalgo-code-textarea {
     width: 100%;
     height: 100%;
-    padding: 0;
+    min-height: 380px !important;
+    max-height: none !important;
+    padding: 16px;
     margin: 0;
     font-family: 'Courier New', Courier, monospace;
     font-size: 14px;
     line-height: 1.5;
     white-space: pre-wrap;
     word-wrap: break-word;
-    border: none;
+    border: 1px solid var(--jalgo-border);
+    border-radius: 6px;
+    background: #1e1e1e;
+    /* Always dark for code */
+    color: #e8eaed;
     box-sizing: border-box;
-}
-
-.jalgo-code-textarea {
-    color: transparent;
-    background: transparent;
-    caret-color: var(--jalgo-text);
-    z-index: 2;
     resize: vertical;
     outline: none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.jalgo-code-highlight {
-    z-index: 1;
-    color: var(--jalgo-text);
-    pointer-events: none;
+.jalgo-editor-container.code-view-active .jalgo-code-textarea {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    /* Hide scrollbars since textarea auto-grows */
+    min-height: 380px !important;
+}
+
+.jalgo-code-textarea:focus {
+    border-color: #6366f1;
 }
 
 /* Syntax Colors */
-.token-tag { color: #e06c75; font-weight: bold; }
-.token-attr { color: #d19a66; }
-.token-string { color: #98c379; }
-.token-punct { color: #abb2bf; }
+.token-tag {
+    color: #e06c75;
+    font-weight: bold;
+}
+
+.token-attr {
+    color: #d19a66;
+}
+
+.token-string {
+    color: #98c379;
+}
+
+.token-punct {
+    color: #abb2bf;
+}
 
 /* SEO Panel */
 .jalgo-seo-panel {
@@ -350,11 +683,38 @@
 
 /* Custom Syntax Highlighting for Visual Pre Blocks */
 .jalgo-editor-canvas pre {
+    margin-top: 1.5em;
+    margin-bottom: 1em;
+    position: relative;
     background-color: rgba(0, 0, 0, 0.05);
-    padding: 12px;
+    padding: 2.5rem 1rem 1rem 1rem;
+    border: 1px solid var(--jalgo-border);
     border-radius: 6px;
-    overflow-x: auto;
     font-family: 'Courier New', Courier, monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.jalgo-editor-canvas pre::before {
+    content: "Code";
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--jalgo-text);
+    background: var(--jalgo-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--jalgo-border);
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+    font-family: var(--jalgo-font-family, system-ui, -apple-system, sans-serif);
+}
+
+.jalgo-editor-canvas [dir="rtl"] pre::before {
+    left: auto;
+    right: 8px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -363,13 +723,82 @@
     }
 }
 
-.jalgo-token-keyword { color: #d73a49; font-weight: 600; }
-.jalgo-token-string { color: #032f62; }
-.jalgo-token-number { color: #005cc5; }
-.jalgo-token-comment { color: #6a737d; font-style: italic; }
+.jalgo-token-keyword {
+    color: #d73a49;
+    font-weight: 600;
+}
 
-.jalgo-editor-container[data-jalgo-theme="8bit"] .jalgo-token-keyword { color: #ff00ff; }
-.jalgo-editor-container[data-jalgo-theme="8bit"] .jalgo-token-string { color: #ffff00; }
-.jalgo-editor-container[data-jalgo-theme="8bit"] .jalgo-token-number { color: #00ffff; }
-.jalgo-editor-container[data-jalgo-theme="8bit"] .jalgo-token-comment { color: #888888; }
+.jalgo-token-string {
+    color: #032f62;
+}
+
+.jalgo-token-number {
+    color: #005cc5;
+}
+
+.jalgo-token-comment {
+    color: #6a737d;
+    font-style: italic;
+}
+
+.jalgo-editor-container[data-jalgo-theme="8bit"] .jalgo-token-keyword {
+    color: #ff00ff;
+}
+
+.jalgo-editor-container[data-jalgo-theme="8bit"] .jalgo-token-string {
+    color: #ffff00;
+}
+
+.jalgo-editor-container[data-jalgo-theme="8bit"] .jalgo-token-number {
+    color: #00ffff;
+}
+
+.jalgo-editor-container[data-jalgo-theme="8bit"] .jalgo-token-comment {
+    color: #888888;
+}
+
+.jalgo-editor-canvas img {
+    max-width: 300px;
+    height: auto;
+    border: 1px solid var(--jalgo-border) !important;
+    border-radius: 8px;
+    margin: 12px auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    display: block;
+    cursor: pointer;
+}
+
+.jalgo-editor-canvas img:hover {
+    transform: scale(1.01);
+    border-color: var(--jalgo-focus-ring) !important;
+}
+
+.jalgo-editor-canvas img.selected {
+    box-shadow: 0 0 0 3px var(--jalgo-focus-ring);
+    border-color: var(--jalgo-focus-ring) !important;
+}
+
+.jalgo-editor-canvas img.align-left {
+    margin-right: auto;
+    margin-left: 0;
+}
+
+.jalgo-editor-canvas img.align-center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.jalgo-editor-canvas img.align-right {
+    margin-left: auto;
+    margin-right: 0;
+}
+.jalgo-editor-canvas a {
+    color: #6366f1 !important;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.jalgo-editor-canvas a:hover {
+    color: #4f46e5 !important;
+}
 
