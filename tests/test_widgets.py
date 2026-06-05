@@ -8,3 +8,13 @@ def test_fluid_text_widget_media():
 def test_fluid_text_widget_template():
     widget = FluidTextWidget()
     assert widget.template_name == "jalgo_editor/widget.html"
+
+def test_fluid_text_widget_format_value_sanitizes():
+    widget = FluidTextWidget()
+    unsafe_html = '<p>Test <script>alert(1)</script></p>'
+    safe_html = '<p>Test alert(1)</p>'
+    assert widget.format_value(unsafe_html) == safe_html
+
+def test_fluid_text_widget_format_value_none():
+    widget = FluidTextWidget()
+    assert widget.format_value(None) == None

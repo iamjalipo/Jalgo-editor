@@ -1,15 +1,18 @@
+import re
 from html.parser import HTMLParser
 from urllib.parse import urlparse
 
 class JalgoSanitizer(HTMLParser):
     ALLOWED_TAGS = {
-        "p", "strong", "em", "blockquote", "h2", "h3", 
-        "ul", "ol", "li", "pre", "code", "a", "img"
+        "p", "strong", "em", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6", 
+        "ul", "ol", "li", "pre", "code", "a", "img", "br", "hr", "b", "i", "span"
     }
     
     ALLOWED_ATTRIBUTES = {"dir", "href", "src", "alt", "title"}
     
     ALLOWED_DIR_VALUES = {"ltr", "rtl", "auto"}
+    
+    CLEAN_URL_REGEX = re.compile(r"[\s\x00-\x1F\x7F-\x9F]")
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
@@ -39,8 +42,14 @@ class JalgoSanitizer(HTMLParser):
                 continue
 
             if attr in ("href", "src"):
-                parsed = urlparse(value)
-                if parsed.scheme and parsed.scheme.lower() not in ("http", "https", "mailto", "tel"):
+                cleaned_val = self.CLEAN_URL_REGEX.sub("", value)
+                parsed = urlparse(cleaned_val)
+                scheme = parsed.scheme.lower() if parsed.scheme else ""
+
+                if scheme == "data" and attr == "src":
+                    if not cleaned_val.lower().startswith("data:image/"):
+                        continue
+                elif scheme and scheme not in ("http", "https", "mailto", "tel"):
                     continue
 
             clean_attrs.append(f'{attr}="{self._escape_attr(value)}"')
@@ -49,6 +58,17 @@ class JalgoSanitizer(HTMLParser):
             self.result.append(f"<{tag} {' '.join(clean_attrs)}>")
         else:
             self.result.append(f"<{tag}>")
+
+    def handle_startendtag(self, tag, attrs):
+        tag = tag.lower()
+        if tag not in self.ALLOWED_TAGS:
+            return
+        
+        if tag in ("img", "br", "hr"):
+            self.handle_starttag(tag, attrs)
+        else:
+            self.handle_starttag(tag, attrs)
+            self.handle_endtag(tag)
 
     def handle_endtag(self, tag):
         tag = tag.lower()

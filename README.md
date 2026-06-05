@@ -14,9 +14,12 @@ Right now, if a Django developer wants a rich-text editor, they have to compromi
 ## Killer Features
 
 1.  **Smart Bi-Directional (Bidi) Engine**: Users don't click an "RTL" or "LTR" button. The editor automatically detects the language of every new paragraph natively applying `dir="rtl"` to Persian/Arabic blocks, and `dir="ltr"` to English.
-2.  **100% CSP Compliant (Bank-Grade Security)**: Zero inline styles. Formatting is strictly semantic. A robust backend Python parser completely strips bad formatting on save.
-3.  **The "Zen" Interface**: Bubble Menus, Slash Commands (`/`), and a beautiful glassmorphism design that fully respects Django's Light/Dark modes.
-4.  **Built-in SEO Tools & Code View**: Real-time word counts, reading time, heading hierarchy validators, and a zero-dependency Syntax-Highlighted Code Editor built right in.
+2.  **Bank-Grade Security (Double Sanitization)**: 100% CSP compliant with zero inline styles. A rigorous frontend DOM sanitizer prevents client-side XSS during copy-paste, while a robust backend Python parser provides defense-in-depth Stored XSS protection. Safely handles Base64 image embedding while aggressively stripping malicious data URIs.
+3.  **The "Zen" Interface & Dynamic Themes**: Notion-like Bubble Menus, fully keyboard-navigable Slash Commands (`/`), and a beautiful premium glassmorphism design. Instantly switch between multiple themes including Default, Dark, Retro, and an 8-Bit pixel aesthetic!
+4.  **Live Syntax Highlighting**: A lightweight, zero-dependency generic syntax highlighter automatically colorizes programming languages (keywords, strings, comments) in `<pre>` code blocks as you type—even adapting to your chosen theme.
+5.  **Built-in SEO Tools & Code View**: Real-time word counts, reading time, heading hierarchy validators, and a robust HTML Code View editor.
+6.  **Seamless Admin Integration**: Automatically initializes in Django Admin, fully supporting dynamic Inline Formsets without any configuration.
+7.  **Drag & Drop Images**: Works out-of-the-box using local Base64 embedding with secure validation.
 
 ## Installation
 

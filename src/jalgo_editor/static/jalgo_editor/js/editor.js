@@ -56,6 +56,9 @@ class JalgoEditor {
         this.container.addEventListener('dragleave', () => this.container.classList.remove('drag-over'));
         this.container.addEventListener('drop', (e) => this.handleDrop(e));
 
+        // Add keyboard listener for slash menu
+        this.canvas.addEventListener('keydown', (e) => this.handleKeyDown(e));
+
         // Initial analysis
         this.syncAndAnalyze();
     }
@@ -79,6 +82,20 @@ class JalgoEditor {
         // Toolbar
         this.toolbar = document.createElement('div');
         this.toolbar.className = 'jalgo-editor-toolbar';
+        
+        // Theme Selector
+        this.themeSelect = document.createElement('select');
+        this.themeSelect.className = 'jalgo-editor-theme-select';
+        this.themeSelect.innerHTML = `
+            <option value="default">Default Theme</option>
+            <option value="retro">Retro</option>
+            <option value="8bit">8-Bit</option>
+        `;
+        this.themeSelect.addEventListener('change', (e) => {
+            this.container.setAttribute('data-jalgo-theme', e.target.value);
+        });
+        this.toolbar.appendChild(this.themeSelect);
+
         this.toggleBtn = document.createElement('button');
         this.toggleBtn.type = 'button';
         this.toggleBtn.textContent = '</> Code View';
@@ -110,7 +127,7 @@ class JalgoEditor {
         // Sync Code View -> Visual
         this.codeTextarea.addEventListener('input', () => {
             this.updateSyntaxHighlighting();
-            this.canvas.innerHTML = this.codeTextarea.value;
+            this.canvas.innerHTML = this.sanitizeFrontend(this.codeTextarea.value);
             this.syncAndAnalyze();
         });
     }
@@ -151,20 +168,87 @@ class JalgoEditor {
         this.codeHighlight.innerHTML = safeText;
     }
 
+    sanitizeFrontend(html) {
+        if (!html) return '';
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        const allowedTags = [
+            "p", "strong", "em", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6",
+            "ul", "ol", "li", "pre", "code", "a", "img", "br", "hr", "b", "i", "span"
+        ];
+        const allowedAttrs = ["dir", "href", "src", "alt", "title"];
+        
+        const sanitizeNode = (node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                return node.cloneNode(true);
+            }
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                if (tagName === 'br') return document.createElement('br');
+                if (tagName === 'hr') return document.createElement('hr');
+                
+                if (!allowedTags.includes(tagName)) {
+                    if (['script', 'style', 'iframe', 'object', 'embed', 'noscript'].includes(tagName)) {
+                        return null;
+                    }
+                    const frag = document.createDocumentFragment();
+                    node.childNodes.forEach(child => {
+                        const cleanChild = sanitizeNode(child);
+                        if (cleanChild) frag.appendChild(cleanChild);
+                    });
+                    return frag;
+                }
+                
+                const newEl = document.createElement(tagName);
+                Array.from(node.attributes).forEach(attr => {
+                    const name = attr.name.toLowerCase();
+                    if (allowedAttrs.includes(name)) {
+                        let val = attr.value;
+                        if (name === 'href' || name === 'src') {
+                            const cleanVal = val.replace(/[\s\x00-\x1F\x7F-\x9F]/g, '');
+                            const lowerVal = cleanVal.toLowerCase();
+                            
+                            if (lowerVal.startsWith('javascript:') || lowerVal.startsWith('vbscript:')) {
+                                return;
+                            }
+                            if (lowerVal.startsWith('data:')) {
+                                if (name !== 'src' || !lowerVal.startsWith('data:image/')) {
+                                    return;
+                                }
+                            }
+                        }
+                        newEl.setAttribute(name, val);
+                    }
+                });
+                
+                node.childNodes.forEach(child => {
+                    const cleanChild = sanitizeNode(child);
+                    if (cleanChild) newEl.appendChild(cleanChild);
+                });
+                return newEl;
+            }
+            return null;
+        };
+        
+        const fragment = document.createDocumentFragment();
+        doc.body.childNodes.forEach(child => {
+            const cleanChild = sanitizeNode(child);
+            if (cleanChild) fragment.appendChild(cleanChild);
+        });
+        
+        const temp = document.createElement('div');
+        temp.appendChild(fragment);
+        return temp.innerHTML;
+    }
+
     handlePaste(e) {
         e.preventDefault();
         const textHTML = e.clipboardData.getData('text/html');
         const textPlain = e.clipboardData.getData('text/plain');
 
         if (textHTML) {
-            // Very basic frontend sanitize (let backend handle strict validation)
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(textHTML, 'text/html');
-            const cleanHTML = doc.body.innerHTML
-                .replace(/<style[^>]*>.*?<\/style>/gi, '')
-                .replace(/<script[^>]*>.*?<\/script>/gi, '')
-                .replace(/\s*style="[^"]*"/gi, '') // Strip inline styles
-                .replace(/\s*class="[^"]*"/gi, ''); // Strip classes
+            const cleanHTML = this.sanitizeFrontend(textHTML);
             document.execCommand('insertHTML', false, cleanHTML);
         } else if (textPlain) {
             document.execCommand('insertText', false, textPlain);
@@ -179,8 +263,32 @@ class JalgoEditor {
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             const file = e.dataTransfer.files[0];
             if (file.type.startsWith('image/')) {
-                alert('Premium Feature: Please configure JALGO_CDN_TOKEN to automatically upload, compress, and insert this image via Jalgo Cloud CDN.');
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const base64Src = event.target.result;
+                    const img = document.createElement('img');
+                    img.src = base64Src;
+                    img.alt = file.name;
+                    this.insertNodeAtCursor(img);
+                    this.syncAndAnalyze();
+                };
+                reader.readAsDataURL(file);
             }
+        }
+    }
+
+    insertNodeAtCursor(node) {
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(node);
+            range.setStartAfter(node);
+            range.setEndAfter(node);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        } else {
+            this.canvas.appendChild(node);
         }
     }
 
@@ -191,8 +299,52 @@ class JalgoEditor {
         // 2. Perform Bidi directional analysis on current blocks
         this.analyzeDirection();
         
-        // 3. Update SEO Stats & Outline Validator
+        // 3. Highlight Code Blocks in Visual Mode
+        this.highlightCodeBlocks();
+        
+        // 4. Update SEO Stats & Outline Validator
         this.updateSeoStats();
+    }
+
+    highlightCodeBlocks() {
+        const preBlocks = this.canvas.querySelectorAll('pre');
+        preBlocks.forEach(pre => {
+            // Only process text nodes inside pre, skip already highlighted
+            if (pre.querySelector('.jalgo-token-keyword')) return; 
+
+            let text = pre.textContent;
+            
+            // Basic regex syntax highlighting for python/js
+            let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            // Keywords
+            const keywords = ['def ', 'class ', 'return ', 'import ', 'from ', 'function ', 'const ', 'let ', 'var ', 'if ', 'else ', 'for ', 'while '];
+            keywords.forEach(kw => {
+                const regex = new RegExp(`\\b(${kw.trim()})\\b `, 'g');
+                html = html.replace(regex, '<span class="jalgo-token-keyword">$1</span> ');
+            });
+
+            // Strings (single and double quotes)
+            html = html.replace(/(&quot;.*?&quot;|&#39;.*?&#39;|".*?"|'.*?')/g, '<span class="jalgo-token-string">$1</span>');
+
+            // Numbers
+            html = html.replace(/\b(\d+)\b/g, '<span class="jalgo-token-number">$1</span>');
+
+            // Comments (Python # or JS //)
+            html = html.replace(/(#.*|\/\/.*)$/gm, '<span class="jalgo-token-comment">$1</span>');
+
+            // Only update if it changed
+            if (pre.innerHTML !== html) {
+                pre.innerHTML = html;
+                // Place cursor at end of pre to avoid annoying cursor jumping
+                const range = document.createRange();
+                const sel = window.getSelection();
+                range.selectNodeContents(pre);
+                range.collapse(false);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        });
     }
 
     updateSeoStats() {
@@ -428,8 +580,46 @@ class JalgoEditor {
         return null;
     }
 
+    handleKeyDown(e) {
+        if (this.slashMenu && this.slashMenu.classList.contains('active')) {
+            const items = this.slashMenu.querySelectorAll('.jalgo-slash-menu-item');
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                this.slashMenuSelectedIndex = (this.slashMenuSelectedIndex + 1) % items.length;
+                this.updateSlashMenuSelection();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                this.slashMenuSelectedIndex = (this.slashMenuSelectedIndex - 1 + items.length) % items.length;
+                this.updateSlashMenuSelection();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                const selectedBtn = items[this.slashMenuSelectedIndex];
+                if (selectedBtn) {
+                    selectedBtn.dispatchEvent(new MouseEvent('mousedown'));
+                }
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                this.hideSlashMenu();
+            }
+        }
+    }
+
+    updateSlashMenuSelection() {
+        const items = this.slashMenu.querySelectorAll('.jalgo-slash-menu-item');
+        items.forEach((item, index) => {
+            if (index === this.slashMenuSelectedIndex) {
+                item.classList.add('selected');
+                item.scrollIntoView({ block: 'nearest' });
+            } else {
+                item.classList.remove('selected');
+            }
+        });
+    }
+
     showSlashMenu(rect) {
         this.slashMenu.classList.add('active');
+        this.slashMenuSelectedIndex = 0;
+        this.updateSlashMenuSelection();
         const top = rect.top + window.scrollY + 25; // slightly below the slash
         const left = rect.left + window.scrollX;
         this.slashMenu.style.top = `${top}px`;
@@ -457,8 +647,22 @@ class JalgoEditor {
     }
 }
 
-// Auto-initialize all editors on page load
+// Auto-initialize all editors on page load and on Django admin inline additions
 document.addEventListener("DOMContentLoaded", () => {
-    const wrappers = document.querySelectorAll('.jalgo-editor-wrapper');
-    wrappers.forEach(wrapper => new JalgoEditor(wrapper));
+    const initEditors = () => {
+        const wrappers = document.querySelectorAll('.jalgo-editor-wrapper:not([data-initialized])');
+        wrappers.forEach(wrapper => {
+            wrapper.setAttribute('data-initialized', 'true');
+            new JalgoEditor(wrapper);
+        });
+    };
+
+    initEditors();
+
+    // Support Django Admin Dynamic Inlines
+    if (typeof jQuery !== 'undefined') {
+        jQuery(document).on('formset:added', () => {
+            initEditors();
+        });
+    }
 });
